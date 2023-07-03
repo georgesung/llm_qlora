@@ -1,0 +1,12 @@
+model_name: open_llama_7b_qlora_uncensored
+base_model: openlm-research/open_llama_7b
+model_family: llama  # if unspecified will use AutoModelForCausalLM/AutoTokenizer
+model_context_window: 2048  # if unspecified will use tokenizer.model_max_length
+target_modules:  # modules for which to train lora adapters
+- q_proj
+- k_proj
+- v_proj
+dataset: ehartford/wizard_vicuna_70k_unfiltered
+trainer_output_dir: trainer_outputs/
+model_output_dir: models/  # model saved in {model_output_dir}/{model_name}
+instruct: false  # train for instruct (true) or chat (false)
