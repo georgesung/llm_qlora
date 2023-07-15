@@ -9,4 +9,3 @@ target_modules:  # modules for which to train lora adapters
 dataset: ehartford/wizard_vicuna_70k_unfiltered
 trainer_output_dir: trainer_outputs/
 model_output_dir: models/  # model saved in {model_output_dir}/{model_name}
-instruct: false  # train for instruct (true) or chat (false)

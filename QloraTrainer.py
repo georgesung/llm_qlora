@@ -131,7 +131,7 @@ class QloraTrainer:
             f"trainable params: {trainable_params} || all params: {all_param} || trainable%: {100 * trainable_params / all_param}"
         )
 
-    def _generate_prompt(self, convo: list, eos_token: str, instruct: bool = False) -> str:
+    def _generate_prompt(self, convo: list, eos_token: str) -> str:
         convo_text = ""
         for turn in convo:
             entity = turn["from"]
@@ -149,9 +149,6 @@ class QloraTrainer:
                 end_token = ""
 
             convo_text += value + end_token + "\n\n"
-
-            if instruct and entity == "gpt":
-                return convo_text
         return convo_text
 
     def _process_vicuna_data(self) -> DatasetDict:
@@ -165,7 +162,6 @@ class QloraTrainer:
             self._generate_prompt(
                 data_point["conversations"],
                 self.tokenizer.eos_token, 
-                instruct=self.config["instruct"]),
             max_length=context_window,
             truncation=True,
         ))
