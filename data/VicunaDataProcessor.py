@@ -15,7 +15,7 @@ class VicunaDataProcessor(DataProcessor):
         data = data.map(lambda data_point: self.tokenizer(
             self._generate_prompt(
                 data_point["conversations"],
-                self.tokenizer.eos_token)
+                self.tokenizer.eos_token),
             max_length=context_window,
             truncation=True,
         ))
