@@ -52,13 +52,14 @@ class QloraTrainer:
     def train(self):
         # Set up lora config or load pre-trained adapter
         if self.adapter_model is None:
+            config_dict = self.config["lora"]
             config = LoraConfig(
-                r=8,
-                lora_alpha=32,
-                target_modules=self.config["target_modules"],
-                lora_dropout=0.05,
-                bias="none",
-                task_type="CAUSAL_LM"
+                r=config_dict["r"],
+                lora_alpha=config_dict["lora_alpha"],
+                target_modules=config_dict["target_modules"],
+                lora_dropout=config_dict["lora_dropout"],
+                bias=config_dict["bias"],
+                task_type=config_dict["task_type"],
             )
             model = get_peft_model(self.base_model, config)
         else:
