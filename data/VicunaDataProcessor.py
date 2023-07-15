@@ -1,4 +1,4 @@
-from DataProcessor import DataProcessor
+from data import DataProcessor
 
 class VicunaDataProcessor(DataProcessor):
     def __init__(self, config, tokenizer):
