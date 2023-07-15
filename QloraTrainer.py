@@ -15,11 +15,7 @@ class QloraTrainer:
         self.base_model = None
         self.adapter_model = None
         self.merged_model = None
-
-        if self.config["data"]["type"] == "vicuna":
-            self.data_processor = VicunaDataProcessor(config)
-        else:
-            raise ValueError("Dataset type not specified in config.data.type")
+        self.data_processor = None
 
     def load_base_model(self):
         model_id = self.config["base_model"]
@@ -70,6 +66,7 @@ class QloraTrainer:
         self._print_trainable_parameters(model)
 
         print("Start data preprocessing")
+        self._setup_data_processor()
         data = self.data_processor.get_data()
 
         print("Start training")
@@ -134,3 +131,9 @@ class QloraTrainer:
         print(
             f"trainable params: {trainable_params} || all params: {all_param} || trainable%: {100 * trainable_params / all_param}"
         )
+
+    def _setup_data_processor(self):
+        if self.config["data"]["type"] == "vicuna":
+            self.data_processor = VicunaDataProcessor(self.config, self.tokenizer)
+        else:
+            raise ValueError("Dataset type not specified in config.data.type")

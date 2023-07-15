@@ -1,8 +1,9 @@
 from DataProcessor import DataProcessor
 
 class VicunaDataProcessor(DataProcessor):
-    def __init__(self, config):
+    def __init__(self, config, tokenizer):
         self.config = config
+        self.tokenizer = tokenizer
 
     def get_data(self) -> DatasetDict:
         if "model_context_window" in self.config:
