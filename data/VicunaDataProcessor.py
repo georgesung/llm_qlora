@@ -1,6 +1,6 @@
 from datasets.dataset_dict import DatasetDict
 
-from data import DataProcessor
+from data.DataProcessor import DataProcessor
 
 
 class VicunaDataProcessor(DataProcessor):
