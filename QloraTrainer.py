@@ -6,7 +6,7 @@ from peft import (LoraConfig, PeftModel, get_peft_model,
                   prepare_model_for_kbit_training)
 from transformers import (AutoModelForCausalLM, AutoTokenizer,
                           BitsAndBytesConfig, LlamaForCausalLM, LlamaTokenizer)
-
+from data import VicunaDataProcessor
 
 class QloraTrainer:
     def __init__(self, config: dict):
@@ -15,6 +15,11 @@ class QloraTrainer:
         self.base_model = None
         self.adapter_model = None
         self.merged_model = None
+
+        if self.config["data"]["type"] == "vicuna":
+            self.data_processor = VicunaDataProcessor(config)
+        else:
+            raise ValueError("Dataset type not specified in config.data.type")
 
     def load_base_model(self):
         model_id = self.config["base_model"]
@@ -65,8 +70,7 @@ class QloraTrainer:
         self._print_trainable_parameters(model)
 
         print("Start data preprocessing")
-        # TODO: Expand this to cover more dataset types and processing patterns
-        data = self._process_vicuna_data()
+        data = self.data_processor.get_data()
 
         print("Start training")
         trainer = transformers.Trainer(
@@ -130,39 +134,3 @@ class QloraTrainer:
         print(
             f"trainable params: {trainable_params} || all params: {all_param} || trainable%: {100 * trainable_params / all_param}"
         )
-
-    def _generate_prompt(self, convo: list, eos_token: str) -> str:
-        convo_text = ""
-        for turn in convo:
-            entity = turn["from"]
-            value = turn["value"]
-
-            if entity == "human":
-                convo_text += "### HUMAN:\n"
-                end_token = ""
-            elif entity == "gpt":
-                convo_text += "### RESPONSE:\n"
-                end_token = eos_token  # LLM should stop its output after the response
-            else:
-                print(f"WARNING: uknown entity {entity}")
-                convo_text += f"### {entity.upper()}:\n"
-                end_token = ""
-
-            convo_text += value + end_token + "\n\n"
-        return convo_text
-
-    def _process_vicuna_data(self) -> DatasetDict:
-        if "model_context_window" in self.config:
-            context_window = self.config["model_context_window"]
-        else:
-            context_window = self.tokenizer.model_max_length
-
-        data = load_dataset(self.config["dataset"])
-        data = data.map(lambda data_point: self.tokenizer(
-            self._generate_prompt(
-                data_point["conversations"],
-                self.tokenizer.eos_token, 
-            max_length=context_window,
-            truncation=True,
-        ))
-        return data
