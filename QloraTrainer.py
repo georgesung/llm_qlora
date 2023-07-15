@@ -5,7 +5,7 @@ from peft import (LoraConfig, PeftModel, get_peft_model,
 from transformers import (AutoModelForCausalLM, AutoTokenizer,
                           BitsAndBytesConfig, LlamaForCausalLM, LlamaTokenizer)
 
-from data.VicunaDataProcessor import VicunaDataProcessor
+from data_processor.VicunaDataProcessor import VicunaDataProcessor
 
 
 class QloraTrainer:
