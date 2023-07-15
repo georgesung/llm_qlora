@@ -1,6 +1,5 @@
 import torch
 import transformers
-from datasets import load_dataset
 from peft import (LoraConfig, PeftModel, get_peft_model,
                   prepare_model_for_kbit_training)
 from transformers import (AutoModelForCausalLM, AutoTokenizer,
