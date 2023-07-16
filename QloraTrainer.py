@@ -72,18 +72,18 @@ class QloraTrainer:
         data = self.data_processor.get_data()
 
         print("Start training")
+        config_dict = self.config["trainer"]
         trainer = transformers.Trainer(
             model=model,
             train_dataset=data["train"],
             args=transformers.TrainingArguments(
-                per_device_train_batch_size=1,
-                gradient_accumulation_steps=4,
-                warmup_steps=100,
-                #max_steps=200,  # short run for debugging
-                num_train_epochs=1,  # full run
-                learning_rate=2e-4,
+                per_device_train_batch_size=config_dict["batch_size"],
+                gradient_accumulation_steps=config_dict["gradient_accumulation_steps"],
+                warmup_steps=config_dict["warmup_steps"],
+                num_train_epochs=config_dict["num_train_epochs"],
+                learning_rate=config_dict["learning_rate"],
                 fp16=True,
-                logging_steps=20,
+                logging_steps=config_dict["logging_steps"],
                 output_dir=self.config["trainer_output_dir"],
                 report_to="tensorboard",
                 #optim="adamw"

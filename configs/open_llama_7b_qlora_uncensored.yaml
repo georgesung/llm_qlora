@@ -15,5 +15,12 @@ lora:
   lora_dropout: 0.05
   bias: none
   task_type: CAUSAL_LM
+trainer:
+  batch_size: 1
+  gradient_accumulation_steps: 4
+  warmup_steps: 100
+  num_train_epochs: 1
+  learning_rate: 0.0002  # 2e-4
+  logging_steps: 20
 trainer_output_dir: trainer_outputs/
 model_output_dir: models/  # model saved in {model_output_dir}/{model_name}
