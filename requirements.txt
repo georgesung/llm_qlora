@@ -8,5 +8,5 @@ peft
 loralib
 sentencepiece
 scipy
-git+https://github.com/huggingface/peft.git@86290e9660d24ef0d0cedcf57710da249dd1f2f4
+peft
 tensorboardX
