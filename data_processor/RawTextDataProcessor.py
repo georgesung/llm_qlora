@@ -26,8 +26,12 @@ class RawTextDataProcessor(DataProcessor):
 
             i = 0
             while i < len(all_text):
+                chunk = ""
+                if "chunk_prefix" in self.config["data"]:
+                    chunk += self.config["data"]["chunk_prefix"]
+
                 i = max(i - chunk_char_overlap, 0)
-                chunk = all_text[i:i+chunk_char_len]
+                chunk += all_text[i:i+chunk_char_len]
                 texts.append(chunk)
                 i += chunk_char_len
 
