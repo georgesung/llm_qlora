@@ -27,5 +27,5 @@ if __name__ == "__main__":
     print("Load base model")
     trainer.load_base_model()
 
-    print("Start training")
-    trainer.train()
+    print("Start merging")
+    trainer.merge_and_save()

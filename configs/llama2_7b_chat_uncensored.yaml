@@ -1,7 +1,45 @@
 model_name: llama2_7b_chat_uncensored
 base_model: TheBloke/Llama-2-7B-fp16
+# when training on multi-GPUs then model.embed_tokens & lm_head should be placed on the same device
+device_map: {
+ 'model.embed_tokens': 1, 
+ 'model.layers.0': 0, 
+ 'model.layers.1': 0, 
+ 'model.layers.2': 0, 
+ 'model.layers.3': 0, 
+ 'model.layers.4': 0, 
+ 'model.layers.5': 0, 
+ 'model.layers.6': 0, 
+ 'model.layers.7': 0, 
+ 'model.layers.8': 0, 
+ 'model.layers.9': 0, 
+ 'model.layers.10': 0, 
+ 'model.layers.11': 0, 
+ 'model.layers.12': 0, 
+ 'model.layers.13': 0, 
+ 'model.layers.14': 0, 
+ 'model.layers.15': 0, 
+ 'model.layers.16': 0, 
+ 'model.layers.17': 1, 
+ 'model.layers.18': 1, 
+ 'model.layers.19': 1, 
+ 'model.layers.20': 1, 
+ 'model.layers.21': 1, 
+ 'model.layers.22': 1, 
+ 'model.layers.23': 1, 
+ 'model.layers.24': 1, 
+ 'model.layers.25': 1, 
+ 'model.layers.26': 1, 
+ 'model.layers.27': 1, 
+ 'model.layers.28': 1, 
+ 'model.layers.29': 1, 
+ 'model.layers.30': 1, 
+ 'model.layers.31': 1, 
+ 'model.norm': 1, 
+ 'lm_head': 1
+}
 model_family: llama  # if unspecified will use AutoModelForCausalLM/AutoTokenizer
-model_context_window: 4096  # if unspecified will use tokenizer.model_max_length
+model_context_window: 8192  # if unspecified will use tokenizer.model_max_length
 data:
   type: vicuna
   dataset: ehartford/wizard_vicuna_70k_unfiltered  # HuggingFace hub

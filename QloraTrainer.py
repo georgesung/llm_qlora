@@ -4,7 +4,6 @@ from peft import (LoraConfig, PeftModel, get_peft_model,
                   prepare_model_for_kbit_training)
 from transformers import (AutoModelForCausalLM, AutoTokenizer,
                           BitsAndBytesConfig, LlamaForCausalLM, LlamaTokenizer)
-
 from data_processor.RawTextDataProcessor import RawTextDataProcessor
 from data_processor.VicunaDataProcessor import VicunaDataProcessor
 
@@ -17,9 +16,15 @@ class QloraTrainer:
         self.adapter_model = None
         self.merged_model = None
         self.data_processor = None
+        self.device_map = None
 
     def load_base_model(self):
         model_id = self.config["base_model"]
+
+        if self.config['device_map'] != "":
+            self.device_map = self.config['device_map']
+        else:
+            self.device_map = "auto"
 
         bnb_config = BitsAndBytesConfig(
             load_in_4bit=True,
@@ -29,26 +34,41 @@ class QloraTrainer:
         )
 
         if "model_family" in self.config and self.config["model_family"] == "llama":
-            tokenizer = LlamaTokenizer.from_pretrained(model_id)
-            model = LlamaForCausalLM.from_pretrained(model_id, quantization_config=bnb_config, device_map={"":0})
+            tokenizer = LlamaTokenizer.from_pretrained(model_id, legacy=False)
+            model = LlamaForCausalLM.from_pretrained(
+                model_id,
+                quantization_config=bnb_config,
+                device_map=self.device_map,
+                torch_dtype=torch.bfloat16
+            )
         else:
-            tokenizer = AutoTokenizer.from_pretrained(model_id)
-            model = AutoModelForCausalLM.from_pretrained(model_id, quantization_config=bnb_config, device_map={"":0})
+            tokenizer = AutoTokenizer.from_pretrained(model_id, legacy=False)
+            model = AutoModelForCausalLM.from_pretrained(
+                model_id,
+                quantization_config=bnb_config,
+                device_map=self.device_map,
+                torch_dtype=torch.bfloat16
+            )
 
         if not tokenizer.pad_token:
             # Add padding token if missing, e.g. for llama tokenizer
-            #tokenizer.pad_token = tokenizer.eos_token  # https://github.com/huggingface/transformers/issues/22794
+            # tokenizer.pad_token = tokenizer.eos_token  # https://github.com/huggingface/transformers/issues/22794
             tokenizer.add_special_tokens({'pad_token': '[PAD]'})
 
+        model.tie_weights()
         model.gradient_checkpointing_enable()
         model = prepare_model_for_kbit_training(model)
+        print(model.hf_device_map)
 
         self.tokenizer = tokenizer
         self.base_model = model
 
     def load_adapter_model(self, adapter_path: str):
         """ Load pre-trained lora adapter """
-        self.adapter_model = PeftModel.from_pretrained(self.base_model, adapter_path)
+        self.adapter_model = PeftModel.from_pretrained(
+            self.base_model,
+            adapter_path
+        )
 
     def train(self):
         # Set up lora config or load pre-trained adapter
@@ -86,11 +106,15 @@ class QloraTrainer:
                 logging_steps=config_dict["logging_steps"],
                 output_dir=self.config["trainer_output_dir"],
                 report_to="tensorboard",
-                #optim="adamw"
+                optim="paged_adamw_8bit"
             ),
-            data_collator=transformers.DataCollatorForLanguageModeling(self.tokenizer, mlm=False),
+            data_collator=transformers.DataCollatorForLanguageModeling(
+                self.tokenizer,
+                mlm=False
+            ),
         )
-        model.config.use_cache = False  # silence the warnings. Please re-enable for inference!
+        # silence the warnings. Please re-enable for inference!
+        model.config.use_cache = False
         trainer.train()
 
         model_save_path = f"{self.config['model_output_dir']}/{self.config['model_name']}_adapter"
@@ -103,14 +127,21 @@ class QloraTrainer:
         # Cannot merge when base model loaded in 8-bit/4-bit mode, so load separately
         model_id = self.config["base_model"]
         if "model_family" in self.config and self.config["model_family"] == "llama":
-            base_model = LlamaForCausalLM.from_pretrained(model_id, device_map="cpu")
+            base_model = LlamaForCausalLM.from_pretrained(
+                model_id,
+                device_map="cpu"
+            )
         else:
-            base_model = AutoModelForCausalLM.from_pretrained(model_id, device_map="cpu")
+            base_model = AutoModelForCausalLM.from_pretrained(
+                model_id,
+                device_map="cpu"
+            )
 
         adapter_save_path = f"{self.config['model_output_dir']}/{self.config['model_name']}_adapter"
         model = PeftModel.from_pretrained(base_model, adapter_save_path)
 
-        self.merged_model = model.merge_and_unload()  # note it's on CPU, don't run inference on it
+        # note it's on CPU, don't run inference on it
+        self.merged_model = model.merge_and_unload()
 
         model_save_path = f"{self.config['model_output_dir']}/{self.config['model_name']}"
         self.merged_model.save_pretrained(model_save_path)
@@ -136,8 +167,10 @@ class QloraTrainer:
 
     def _setup_data_processor(self):
         if self.config["data"]["type"] == "vicuna":
-            self.data_processor = VicunaDataProcessor(self.config, self.tokenizer)
+            self.data_processor = VicunaDataProcessor(
+                self.config, self.tokenizer)
         elif self.config["data"]["type"] == "raw_text":
-            self.data_processor = RawTextDataProcessor(self.config, self.tokenizer)
+            self.data_processor = RawTextDataProcessor(
+                self.config, self.tokenizer)
         else:
             raise ValueError("Dataset type not specified in config.data.type")
