@@ -1,0 +1,29 @@
+model_name: llama2_7b_orca
+base_model: TheBloke/Llama-2-7B-fp16
+model_family: llama  # if unspecified will use AutoModelForCausalLM/AutoTokenizer
+model_context_window: 4096  # if unspecified will use tokenizer.model_max_length
+data:
+  type: orca
+  dataset: Open-Orca/OpenOrca  # HuggingFace hub
+  system_header: "### System:\n"
+  instruction_header: "### Instruction:\n"
+  response_header: "### Response:\n"
+lora:
+  r: 8
+  lora_alpha: 32
+  target_modules:  # modules for which to train lora adapters
+  - q_proj
+  - k_proj
+  - v_proj
+  lora_dropout: 0.05
+  bias: none
+  task_type: CAUSAL_LM
+trainer:
+  batch_size: 1
+  gradient_accumulation_steps: 4
+  warmup_steps: 100
+  num_train_epochs: 1
+  learning_rate: 0.0002  # 2e-4
+  logging_steps: 20
+trainer_output_dir: trainer_outputs/
+model_output_dir: models/  # model saved in {model_output_dir}/{model_name}

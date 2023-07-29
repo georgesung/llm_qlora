@@ -5,6 +5,7 @@ from peft import (LoraConfig, PeftModel, get_peft_model,
 from transformers import (AutoModelForCausalLM, AutoTokenizer,
                           BitsAndBytesConfig, LlamaForCausalLM, LlamaTokenizer)
 
+from data_processor.OrcaDataProcessor import OrcaDataProcessor
 from data_processor.RawTextDataProcessor import RawTextDataProcessor
 from data_processor.VicunaDataProcessor import VicunaDataProcessor
 
@@ -137,6 +138,8 @@ class QloraTrainer:
     def _setup_data_processor(self):
         if self.config["data"]["type"] == "vicuna":
             self.data_processor = VicunaDataProcessor(self.config, self.tokenizer)
+        elif self.config["data"]["type"] == "orca":
+            self.data_processor = OrcaDataProcessor(self.config, self.tokenizer)
         elif self.config["data"]["type"] == "raw_text":
             self.data_processor = RawTextDataProcessor(self.config, self.tokenizer)
         else:
