@@ -17,6 +17,14 @@ python train.py configs/open_llama_7b_qlora_uncensored.yaml
 ## Push model to HuggingFace Hub
 Follow instructions [here](https://huggingface.co/docs/hub/repositories-getting-started#terminal).
 
+## Models trained on HuggingFace Hub
+| Model name | Config file | URL |
+|----------|----------|----------|
+| llama2_7b_openorca_35k | configs/llama2_7b_openorca_35k.yaml | https://huggingface.co/georgesung/llama2_7b_openorca_35k |
+| llama2_7b_chat_uncensored | configs/llama2_7b_chat_uncensored.yaml | https://huggingface.co/georgesung/llama2_7b_chat_uncensored |
+| open_llama_7b_qlora_uncensored | configs/open_llama_7b_qlora_uncensored.yaml | https://huggingface.co/georgesung/llama2_7b_openorca_35k |
+
+
 ## Example inference results
 See this [Colab notebook](https://colab.research.google.com/drive/1IlpeofYD9EU6dNHyKKObZhIzkBMyqlUS?usp=sharing).
 
