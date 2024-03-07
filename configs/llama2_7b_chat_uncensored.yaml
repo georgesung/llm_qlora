@@ -4,7 +4,7 @@ model_family: llama  # if unspecified will use AutoModelForCausalLM/AutoTokenize
 model_context_window: 4096  # if unspecified will use tokenizer.model_max_length
 data:
   type: vicuna
-  dataset: ehartford/wizard_vicuna_70k_unfiltered  # HuggingFace hub
+  dataset: georgesung/wizard_vicuna_70k_unfiltered  # HuggingFace hub
   user_header: "### HUMAN:\n"
   response_header: "### RESPONSE:\n"
 lora:
