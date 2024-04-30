@@ -32,7 +32,7 @@ Simple sanity check:
 python inference.py
 ```
 
-For notebooks with example inference results, see `inference.ipynb` and this [Colab notebook](https://colab.research.google.com/drive/1IlpeofYD9EU6dNHyKKObZhIzkBMyqlUS?usp=sharing).
+For notebooks with example inference results, see `inference.ipynb` and this [Colab notebook](https://colab.research.google.com/drive/1CQbUROBZCuxfLa-QopodJDCSfqMLIlLI?usp=sharing).
 
 ## Blog post
 Blog post describing the process of QLoRA fine tuning: https://georgesung.github.io/ai/qlora-ift/
