@@ -1,6 +1,5 @@
 torch
 transformers
-langchain
 accelerate
 bitsandbytes
 datasets

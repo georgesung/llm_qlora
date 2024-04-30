@@ -2,10 +2,9 @@ import argparse
 
 import torch
 import yaml
-from langchain import PromptTemplate
 from transformers import (AutoConfig, AutoModel, AutoModelForCausalLM,
                           AutoTokenizer, GenerationConfig, LlamaForCausalLM,
-                          LlamaTokenizer, pipeline)
+                          LlamaTokenizer, BitsAndBytesConfig, pipeline)
 
 """
 Ad-hoc sanity check to see if model outputs something coherent
@@ -34,15 +33,16 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     config = read_yaml_file(args.config_path)
+    q_config = BitsAndBytesConfig(load_in_8bit=True)
 
     print("Load model")
     model_path = f"{config['model_output_dir']}/{config['model_name']}"
     if "model_family" in config and config["model_family"] == "llama":
         tokenizer = LlamaTokenizer.from_pretrained(model_path)
-        model = LlamaForCausalLM.from_pretrained(model_path, device_map="auto", load_in_8bit=True)
+        model = LlamaForCausalLM.from_pretrained(model_path, device_map="auto", quantization_config=q_config)
     else:
         tokenizer = AutoTokenizer.from_pretrained(model_path)
-        model = AutoModelForCausalLM.from_pretrained(model_path, device_map="auto", load_in_8bit=True)
+        model = AutoModelForCausalLM.from_pretrained(model_path, device_map="auto", quantization_config=q_config)
 
     pipe = pipeline(
         "text-generation",
