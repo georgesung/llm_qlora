@@ -9,9 +9,9 @@ First, make sure you are using python 3.8+. If you're using python 3.7, see the 
 python train.py <config_file>
 ```
 
-For exmaple, to fine-tune OpenLLaMA-7B on the wizard_vicuna_70k_unfiltered dataset, run
+For exmaple, to fine-tune Llama3-8B on the wizard_vicuna_70k_unfiltered dataset, run
 ```
-python train.py configs/open_llama_7b_qlora_uncensored.yaml
+python train.py configs/llama3_8b_chat_uncensored.yaml
 ```
 
 ## Push model to HuggingFace Hub
@@ -39,6 +39,10 @@ Blog post describing the process of QLoRA fine tuning: https://georgesung.github
 
 ## Converting to GGUF and quantizing the model
 Download and build [llama.cpp](https://github.com/ggerganov/llama.cpp), and follow the instructions on their README to convert the model to GGUF and quantize to desired specs.
+
+*Tip*: If llama.cpp gives an error saying the number of tokens is different between the model and tokenizer.json, it could be because we added a pad token (e.g. for training Llama). One work-around is to copy the original tokenizer.json from the base model (you can find the base model in huggingface cache at `~/.cache/huggingface/`) to the new model's location, but make sure to back-up your tokenizer.json!
+
+*Tip*: Llama3 uses BPE tokenizer, make sure to specify `--vocab-type bpe` when converting to GGUF
 
 ## Troubleshooting
 ### Issues with python 3.7
