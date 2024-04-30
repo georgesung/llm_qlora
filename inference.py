@@ -3,7 +3,7 @@ import argparse
 import torch
 import yaml
 from langchain import PromptTemplate
-from transformers import (AutoConfig, AutoModel, AutoModelForSeq2SeqLM,
+from transformers import (AutoConfig, AutoModel, AutoModelForCausalLM,
                           AutoTokenizer, GenerationConfig, LlamaForCausalLM,
                           LlamaTokenizer, pipeline)
 
