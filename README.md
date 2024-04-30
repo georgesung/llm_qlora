@@ -20,16 +20,25 @@ Follow instructions [here](https://huggingface.co/docs/hub/repositories-getting-
 ## Models trained on HuggingFace Hub
 | Model name | Config file | URL |
 |----------|----------|----------|
+| llama3_8b_chat_uncensored | configs/llama3_8b_chat_uncensored.yaml | https://huggingface.co/georgesung/llama3_8b_chat_uncensored |
 | llama2_7b_openorca_35k | configs/llama2_7b_openorca_35k.yaml | https://huggingface.co/georgesung/llama2_7b_openorca_35k |
 | llama2_7b_chat_uncensored | configs/llama2_7b_chat_uncensored.yaml | https://huggingface.co/georgesung/llama2_7b_chat_uncensored |
 | open_llama_7b_qlora_uncensored | configs/open_llama_7b_qlora_uncensored.yaml | https://huggingface.co/georgesung/llama2_7b_openorca_35k |
 
 
-## Example inference results
-See this [Colab notebook](https://colab.research.google.com/drive/1IlpeofYD9EU6dNHyKKObZhIzkBMyqlUS?usp=sharing).
+## Inference
+Simple sanity check:
+```
+python inference.py
+```
+
+For notebooks with example inference results, see `inference.ipynb` and this [Colab notebook](https://colab.research.google.com/drive/1IlpeofYD9EU6dNHyKKObZhIzkBMyqlUS?usp=sharing).
 
 ## Blog post
 Blog post describing the process of QLoRA fine tuning: https://georgesung.github.io/ai/qlora-ift/
+
+## Converting to GGUF and quantizing the model
+Download and build [llama.cpp](https://github.com/ggerganov/llama.cpp), and follow the instructions on their README to convert the model to GGUF and quantize to desired specs.
 
 ## Troubleshooting
 ### Issues with python 3.7
