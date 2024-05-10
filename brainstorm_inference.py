@@ -1,19 +1,11 @@
-import argparse
-
+# devquasar.com
 import torch
 import yaml
-from transformers import (AutoConfig, AutoModel, AutoModelForCausalLM,
-                          AutoTokenizer, GenerationConfig, LlamaForCausalLM,
-                          LlamaTokenizer, BitsAndBytesConfig, pipeline)
+from transformers import (AutoTokenizer, LlamaForCausalLM, BitsAndBytesConfig, pipeline)
 import warnings
 
 # Suppress all warnings
 warnings.filterwarnings("ignore")
-
-"""
-Ad-hoc sanity check to see if model outputs something coherent
-Not a robust inference platform!
-"""
 
 PROMPT_STOP = ["### Assistant:", "### Human:"]
 
@@ -38,25 +30,12 @@ def get_llm_response(prompt, chat_history, debug=False):
     return raw_output
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("config_path", help="Path to the config YAML file")
-    args = parser.parse_args()
-
-    config = read_yaml_file(args.config_path)
     q_config = BitsAndBytesConfig(load_in_8bit=True)
 
     print("Load model")
-    model_path = f"{config['model_output_dir']}/{config['model_name']}"
-    if "model_family" in config and config["model_family"] == "llama":
-        tokenizer = LlamaTokenizer.from_pretrained(model_path)
-        model = LlamaForCausalLM.from_pretrained(model_path, device_map="auto", quantization_config=q_config)
-        # tokenizer = LlamaTokenizer.from_pretrained('georgesung/llama3_8b_chat_uncensored')
-        # model = LlamaForCausalLM.from_pretrained('georgesung/llama3_8b_chat_uncensored', device_map="auto", quantization_config=q_config)
-    else:
-        tokenizer = AutoTokenizer.from_pretrained(model_path)
-        model = AutoModelForCausalLM.from_pretrained(model_path, device_map="auto", quantization_config=q_config)
-        # tokenizer = AutoTokenizer.from_pretrained('georgesung/llama3_8b_chat_uncensored')
-        # model = AutoModelForCausalLM.from_pretrained('georgesung/llama3_8b_chat_uncensored', device_map="auto", quantization_config=q_config)
+    model = "DevQuasar/llama3_8b_chat_brainstorm"
+    tokenizer = AutoTokenizer.from_pretrained(model)
+    model = LlamaForCausalLM.from_pretrained(model, device_map="auto", quantization_config=q_config)
 
     pipe = pipeline(
         "text-generation",
@@ -68,7 +47,7 @@ if __name__ == "__main__":
         repetition_penalty=1.15
     )
 
-    debug = True
+    debug = False
     try:
         chat_history = ''
         while True:
@@ -78,19 +57,12 @@ if __name__ == "__main__":
             if debug:
                 print(f'[USER]: {user_input}\n[CHAT]: {chat_response}\n')
             else:
-                # Get the last element of the array
                 last_entry = chat_response[-1]
-
-                # Extract the 'generated_text' value
                 generated_text = last_entry['generated_text']
-
-                # Find the last occurrence of '### RESPONSE:'
                 last_response_index = generated_text.rfind('### RESPONSE:')
-
-                # Extract the text after the last '### RESPONSE:'
                 if last_response_index != -1:
                     last_response = generated_text[last_response_index + len('### RESPONSE:'):].strip()
                     print(f'\n[CHAT]: {last_response}\n')
     except KeyboardInterrupt:
         print("\nExiting...")
-    # print(get_llm_response("What is your favorite movie?"))
+

@@ -14,8 +14,9 @@ class VicunaDataProcessor(DataProcessor):
             context_window = self.config["model_context_window"]
         else:
             context_window = self.tokenizer.model_max_length
-
+        print(f'load dataset: {self.config["data"]["dataset"]}')
         data = load_dataset(self.config["data"]["dataset"])
+        print(f'data: {data}')
         data = data.map(lambda data_point: self.tokenizer(
             self._generate_prompt(
                 data_point["conversations"],

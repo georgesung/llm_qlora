@@ -1,10 +1,10 @@
-model_name: llama3_8b_chat_uncensored
+model_name: llama3_8b_chat_brainstorm
 base_model: meta-llama/Meta-Llama-3-8B
 #model_family: llama  # if unspecified will use AutoModelForCausalLM/AutoTokenizer
 model_context_window: 8192  # if unspecified will use tokenizer.model_max_length
 data:
   type: vicuna
-  dataset: georgesung/wizard_vicuna_70k_unfiltered  # HuggingFace hub
+  dataset: DevQuasar/brainstorm_vicuna_1k  # HuggingFace hub
   user_header: "### HUMAN:\n"
   response_header: "### RESPONSE:\n"
 lora:
@@ -21,7 +21,7 @@ trainer:
   batch_size: 1
   gradient_accumulation_steps: 4
   warmup_steps: 100
-  num_train_epochs: 1
+  num_train_epochs: 10
   learning_rate: 0.0002  # 2e-4
   logging_steps: 20
 trainer_output_dir: trainer_outputs/

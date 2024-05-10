@@ -1,3 +1,5 @@
+import os
+
 import torch
 import transformers
 from peft import (LoraConfig, PeftModel, get_peft_model,
@@ -9,6 +11,8 @@ from data_processor.OrcaDataProcessor import OrcaDataProcessor
 from data_processor.RawTextDataProcessor import RawTextDataProcessor
 from data_processor.VicunaDataProcessor import VicunaDataProcessor
 
+os.environ['NCCL_P2P_DISABLE'] = '1'
+os.environ['NCCL_IB_DISABLE'] = '1'
 
 class QloraTrainer:
     def __init__(self, config: dict):
@@ -29,12 +33,16 @@ class QloraTrainer:
             bnb_4bit_compute_dtype=torch.bfloat16
         )
 
+
+
         if "model_family" in self.config and self.config["model_family"] == "llama":
             tokenizer = LlamaTokenizer.from_pretrained(model_id)
-            model = LlamaForCausalLM.from_pretrained(model_id, quantization_config=bnb_config, device_map={"":0})
+            model = LlamaForCausalLM.from_pretrained(model_id, quantization_config=bnb_config, device_map="auto")
+            # model = LlamaForCausalLM.from_pretrained(model_id, quantization_config=bnb_config)
         else:
             tokenizer = AutoTokenizer.from_pretrained(model_id)
-            model = AutoModelForCausalLM.from_pretrained(model_id, quantization_config=bnb_config, device_map={"":0})
+            model = AutoModelForCausalLM.from_pretrained(model_id, quantization_config=bnb_config, device_map="auto")
+            # model = AutoModelForCausalLM.from_pretrained(model_id, quantization_config=bnb_config)
 
         if not tokenizer.pad_token:
             # Add padding token if missing, e.g. for llama tokenizer
@@ -43,6 +51,8 @@ class QloraTrainer:
 
         model.gradient_checkpointing_enable()
         model = prepare_model_for_kbit_training(model)
+
+        print(f'model.device {model.device}')
 
         self.tokenizer = tokenizer
         self.base_model = model
