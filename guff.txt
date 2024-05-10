@@ -10,3 +10,8 @@ python3 convert.py models/llama3_8b_chat_brainstorm/ --outfile llama3_8b_chat_br
 
 ./quantize llama3_8b_chat_brainstorm.f32.gguf  llama3_8b_chat_brainstorm.Q4_0.gguf Q4_0
 ./quantize llama3_8b_chat_brainstorm.f32.gguf  llama3_8b_chat_brainstorm.Q8_0.gguf Q8_0
+
+
+
+https://github.com/ggerganov/llama.cpp/issues/6819
+https://github.com/huggingface/transformers/issues/24899
