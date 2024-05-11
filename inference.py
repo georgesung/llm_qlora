@@ -32,7 +32,7 @@ def get_prompt(human_prompt):
 def get_llm_response(prompt, chat_history, debug=False):
     if debug:
         print(f"debug:  {chat_history}  {get_prompt(prompt)}")
-    raw_output = pipe(chat_history + '\n' + get_prompt(prompt), stop_sequence=PROMPT_STOP)
+    raw_output = pipe(chat_history + '\n' + get_prompt(prompt), stop_sequence=PROMPT_STOP, pad_token_id=14711)
 
 
     return raw_output
@@ -68,7 +68,10 @@ if __name__ == "__main__":
         repetition_penalty=1.15
     )
 
-    debug = True
+    debug = False
+    # print(len(tokenizer))  # 32001
+    # print(model.config.vocab_size)  # 32000
+    # print(tokenizer.get_added_vocab())  # {'<pad>': 32000}
     try:
         chat_history = ''
         while True:
