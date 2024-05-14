@@ -33,7 +33,7 @@ if __name__ == "__main__":
     q_config = BitsAndBytesConfig(load_in_8bit=True)
 
     print("Load model")
-    model = "DevQuasar/llama3_8b_chat_brainstorm"
+    model = "DevQuasar/llama3_8b_chat_brainstorm_plus"
     tokenizer = AutoTokenizer.from_pretrained(model)
     model = LlamaForCausalLM.from_pretrained(model, device_map="auto", quantization_config=q_config)
 

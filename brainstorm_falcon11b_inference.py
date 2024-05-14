@@ -1,7 +1,12 @@
 # devquasar.com
 import torch
 import yaml
-from transformers import (AutoTokenizer, LlamaForCausalLM, BitsAndBytesConfig, pipeline)
+from transformers import (AutoTokenizer,
+                          LlamaForCausalLM,
+                          BitsAndBytesConfig,
+                          pipeline,
+                          FalconForCausalLM,
+                          AutoModelForCausalLM)
 import warnings
 
 # Suppress all warnings
@@ -33,9 +38,9 @@ if __name__ == "__main__":
     q_config = BitsAndBytesConfig(load_in_8bit=True)
 
     print("Load model")
-    model = "DevQuasar/llama3_8b_chat_brainstorm"
+    model = "models/falcon2_11b_chat_brainstorm"
     tokenizer = AutoTokenizer.from_pretrained(model)
-    model = LlamaForCausalLM.from_pretrained(model, device_map="auto", quantization_config=q_config)
+    model = AutoModelForCausalLM.from_pretrained(model, device_map="auto", quantization_config=q_config)
 
     pipe = pipeline(
         "text-generation",

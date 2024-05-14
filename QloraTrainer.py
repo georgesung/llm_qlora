@@ -44,11 +44,11 @@ class QloraTrainer:
             model = AutoModelForCausalLM.from_pretrained(model_id, quantization_config=bnb_config, device_map="auto")
             # model = AutoModelForCausalLM.from_pretrained(model_id, quantization_config=bnb_config)
 
-        # if not tokenizer.pad_token:
+        if not tokenizer.pad_token:
             # Add padding token if missing, e.g. for llama tokenizer
-            #tokenizer.pad_token = tokenizer.eos_token  # https://github.com/huggingface/transformers/issues/22794
+            # tokenizer.pad_token = tokenizer.eos_token  # https://github.com/huggingface/transformers/issues/22794
             # csaba: this cause discrepancy in model vocab size and the actual vocab - test without it
-            # tokenizer.add_special_tokens({'pad_token': '[PAD]'})
+            tokenizer.add_special_tokens({'pad_token': '[PAD]'})
 
         model.gradient_checkpointing_enable()
         model = prepare_model_for_kbit_training(model)
