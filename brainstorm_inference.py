@@ -1,4 +1,5 @@
 # devquasar.com
+import argparse
 import torch
 import yaml
 from transformers import (AutoTokenizer, LlamaForCausalLM, BitsAndBytesConfig, pipeline)
@@ -26,21 +27,24 @@ def get_llm_response(prompt, chat_history, debug=False):
         print(f"debug:  {chat_history}  {get_prompt(prompt)}")
     raw_output = pipe(chat_history + '\n' + get_prompt(prompt), stop_sequence=PROMPT_STOP, pad_token_id=14711)
 
-
     return raw_output
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Run brainstorm inference')
+    parser.add_argument('model', type=str, help='Model name or path')
+    args = parser.parse_args()
+
     q_config = BitsAndBytesConfig(load_in_8bit=True)
 
     print("Load model")
-    model = "DevQuasar/llama3_8b_chat_brainstorm"
+    model = args.model
     tokenizer = AutoTokenizer.from_pretrained(model)
     model = LlamaForCausalLM.from_pretrained(model, device_map="auto", quantization_config=q_config)
 
     pipe = pipeline(
         "text-generation",
-        model=model, 
-        tokenizer=tokenizer, 
+        model=model,
+        tokenizer=tokenizer,
         max_length=512,
         temperature=0.7,
         top_p=0.95,
@@ -65,4 +69,3 @@ if __name__ == "__main__":
                     print(f'\n[CHAT]: {last_response}\n')
     except KeyboardInterrupt:
         print("\nExiting...")
-

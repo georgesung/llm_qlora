@@ -1,5 +1,5 @@
-model_name: llama3_8b_chat_brainstorm
-base_model: meta-llama/Meta-Llama-3-8B
+model_name: llama3_70b_chat_brainstorm
+base_model: meta-llama/Meta-Llama-3-70B
 #model_family: llama  # if unspecified will use AutoModelForCausalLM/AutoTokenizer
 model_context_window: 8192  # if unspecified will use tokenizer.model_max_length
 data:
@@ -21,7 +21,7 @@ trainer:
   batch_size: 1
   gradient_accumulation_steps: 4
   warmup_steps: 100
-  num_train_epochs: 10
+  num_train_epochs: 1
   learning_rate: 0.0002  # 2e-4
   logging_steps: 20
 trainer_output_dir: trainer_outputs/

@@ -1,4 +1,4 @@
-model_name: falcon2_11b_chat_brainstorm_b
+model_name: falcon2_11b_chat_brainstorm_c8000
 base_model: tiiuae/falcon-11B
 #model_family: llama  # if unspecified will use AutoModelForCausalLM/AutoTokenizer
 model_context_window: 8192  # if unspecified will use tokenizer.model_max_length
@@ -12,12 +12,9 @@ lora:
   lora_alpha: 32
   target_modules:  # modules for which to train lora adapters
   - query_key_value
-  - dense,
-  - dense_h_to_4h,
-  - dense_4h_to_h,
-#  - q_proj
-#  - k_proj
-#  - v_proj
+  - dense
+  - dense_h_to_4h
+  - dense_4h_to_h
   lora_dropout: 0.05
   bias: none
   task_type: CAUSAL_LM
@@ -25,8 +22,8 @@ trainer:
   batch_size: 1
   gradient_accumulation_steps: 4
   warmup_steps: 100
-  num_train_epochs: 10
+  num_train_epochs: 50
   learning_rate: 0.0002  # 2e-4
   logging_steps: 20
-trainer_output_dir: trainer_outputs/
+trainer_output_dir: trainer_outputs_falcon/
 model_output_dir: models/  # model saved in {model_output_dir}/{model_name}
