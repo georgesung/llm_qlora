@@ -35,7 +35,7 @@ python inference.py
 For notebooks with example inference results, see `inference.ipynb` and this [Colab notebook](https://colab.research.google.com/drive/1CQbUROBZCuxfLa-QopodJDCSfqMLIlLI?usp=sharing).
 
 ## Blog post
-Blog post describing the process of QLoRA fine tuning: https://georgesung.github.io/ai/qlora-ift/
+Blog post describing the process of QLoRA fine tuning: https://www.georgesung.com/ai/qlora-ift
 
 ## Converting to GGUF and quantizing the model
 Download and build [llama.cpp](https://github.com/ggerganov/llama.cpp), and follow the instructions on their README to convert the model to GGUF and quantize to desired specs.
